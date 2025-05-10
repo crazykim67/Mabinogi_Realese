@@ -154,10 +154,14 @@ client.on(Events.InteractionCreate, async interaction => {
 
 function registerAlarm(timeStr, type) {
   const [hour, minute] = timeStr.split(':').map(Number);
+  console.log(`🕐 [등록] ${type} 정시 알림 → ${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`);
   schedule.scheduleJob(`${minute} ${hour} * * *`, () => sendAlarms(type, false));
+  console.log(`🚨 [실행] ${type} 정시 알림 → ${new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}`);
   const preMinute = (minute - 5 + 60) % 60;
   const preHour = (minute - 5 < 0) ? (hour - 1 + 24) % 24 : hour;
+  console.log(`⏰ [등록] ${type} 5분 전 알림 → ${preHour.toString().padStart(2, '0')}:${preMinute.toString().padStart(2, '0')}`);
   schedule.scheduleJob(`${preMinute} ${preHour} * * *`, () => sendAlarms(type, true));
+  console.log(`⏰ [실행] ${type} 5분 전 알림 → ${new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}`);
 }
 
 async function sendAlarms(type, isPreNotice) {
