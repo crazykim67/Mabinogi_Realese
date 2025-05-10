@@ -57,6 +57,23 @@ client.once('ready', async () => {
   const channel = await client.channels.fetch(process.env.SETTING_CHANNEL_ID);
   if (!channel) return;
 
+// 기존 메시지 삭제 (자신이 보낸 메시지 중 임베드 제목이 일치하는 것만)
+  const messages = await channel.messages.fetch({ limit: 50 });
+  const botMessages = messages.filter(m =>
+    m.author.id === client.user.id &&
+    m.embeds.length > 0 &&
+    m.embeds[0].title === '📢 야채가게 뿌대노기 알리미 설정'
+  );
+
+  for (const msg of botMessages.values()) {
+    try {
+      await msg.delete();
+      console.log(`🗑️ 이전 설정 메시지 삭제됨 (ID: ${msg.id})`);
+    } catch (err) {
+      console.warn(`⚠️ 메시지 삭제 실패: ${err.message}`);
+    }
+  }
+
   const embed = new EmbedBuilder()
     .setTitle('📢 야채가게 뿌대노기 알리미 설정')
     .setDescription(
@@ -152,12 +169,16 @@ async function sendAlarms(type, isPreNotice) {
     const shouldNotify =
       setting === 'alert_all_on' ||
       (type === 'boundary' && (
-        setting === 'alert_all' ||
-        (setting === 'alert_morning' && isMorningTime()) ||
-        (setting === 'alert_afternoon' && isAfternoonTime()) ||
-        (setting === 'alert_no_late' && !isLateNightTime())
-      )) ||
-      (type === 'field' && (setting === 'only_fieldboss' || setting === 'alert_all_on'));
+  setting === 'alert_all' ||
+  setting === 'alert_morning' && isMorningTime() ||
+  setting === 'alert_afternoon' && isAfternoonTime() ||
+  setting === 'alert_no_late' && !isLateNightTime() ||
+  setting === 'alert_all_on'
+)) ||
+(type === 'field' && (
+  setting === 'only_fieldboss' || 
+  setting === 'alert_all_on'
+))
 
     if (shouldNotify) mentionIds.push(`<@${userId}>`);
   }
