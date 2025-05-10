@@ -15,6 +15,8 @@ const schedule = require('node-schedule');
 
 const boundaryTimes = ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'];
 const fieldBossTimes = ['12:00', '18:00', '20:00', '22:00'];
+// const boundaryTimes = ['17:10', '17:20', '17:30', '17:40', '17:50', '18:00', '18:10'];
+// const fieldBossTimes = ['17:10', '17:16', '17:20', '17:26'];
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
